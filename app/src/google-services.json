@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "729224811763",
+    "project_id": "admob-qs-4a434",
+    "storage_bucket": "admob-qs-4a434.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729224811763:android:8a29a81a7557e9e9269386",
+        "android_client_info": {
+          "package_name": "com.google.samples.quickstart.admobexample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmB8fVXMWj7iGvXRpz_ky91kpjUtbltQY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

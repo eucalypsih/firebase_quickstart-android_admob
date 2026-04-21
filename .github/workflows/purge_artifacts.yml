@@ -1,0 +1,33 @@
+# purge_artifacts.yml
+name: Hapus Artifact yang Kadaluarsa dalam 24 Jam
+# Hapus Artifact Lama Setiap Hari
+# Hapus Artifact yang Kadaluarsa Setiap Hari
+# Hapus Semua Artifact Setiap Hari
+permissions:
+  actions: write
+
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: "18 7 * * *" # 07:19 (UTC) 14:00 (WIB)
+
+jobs:
+  hapus-artifact:
+    runs-on: ubuntu-latest
+#    timeout-minutes: 10
+
+    steps:
+      # https://github.com/marketplace/actions/remove-artifacts
+      - name: Hapus Semua Artifact yang Kadaluarsa
+        uses: c-hive/gha-remove-artifacts@v1
+#        uses: geekyeggo/delete-artifact@176a747ab7e287e3ff4787bf8a148716375ca118 # v6.0.0
+#        uses: kolpav/purge-artifacts-action@v1
+#        uses: github/delete-artifacts-action@v1 # joutvhu/delete-artifact@v1 geekyeggo/delete-artifact@v2 philips-labs/action-delete-artifacts actions/delete-artifacts@v1 github/delete-artifacts-action@v1
+        with:
+          age: '90 seconds' # '<number> <unit>', e.g. 5 days, 2 years, 90 seconds, parsed by Moment.js
+        # Optional inputs
+        # skip-tags: true
+        # skip-recent: 5
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+#          expire-in: 0 # menghapus artifact yang kadaluarsa dalam 24 jam
+                       # Set this to 0 to delete all artifacts

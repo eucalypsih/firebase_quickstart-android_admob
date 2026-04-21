@@ -1,0 +1,123 @@
+# gradle_init.yml
+# This is a basic workflow to help you get started with Actions
+name: Gradle Init
+# Controls when the workflow will run
+permissions:
+  actions: write
+#  contents: write
+#  pull-requests: write
+#  repository-projects: write
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v4 #v4.1.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4 #v4.0.0
+        with:
+          java-version: '17'
+          distribution: 'temurin' # 'adopt'
+
+      - name: Install Gradle if needed
+        run: |
+          sudo apt-get install -y gradle
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v6
+
+      - name: Initialize Gradle Wrapper if not exists
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            gradle wrapper --gradle-version=8.2 --distribution-type=bin # 7.6
+          fi
+
+
+      - name: List contents of GitHub Actions workspace
+        run: ls ${{ github.workspace }}
+
+#      - name: Delete a workflow file from the repository
+#        run: rm .github/workflows/AndroidBuild.yml
+
+      - name: Move AndroidBuild.yml to the GitHub workspace directory and rename it as AndroidBuild.2.backup
+        run: mv .github/workflows/gradle_init.yml ${{ github.workspace }}/_github_workflows_gradle_init_yml_2_backup
+
+      - name: Move _github_workflows_android_build_yml_1_backup from GitHub workspace to .github/workflows and rename it as android_build.yml
+        run: mv ${{ github.workspace }}/_github_workflows_android_build_yml_1_backup .github/workflows/android_build.yml
+
+#      - name: Set set SSH
+#        run: mkdir -p ${{ github.workspace }}/.ssh
+
+#      - name: echo
+#        run: echo -en "${{ secrets.SSH_PRIVATE_KEY }}"; > ${{ github.workspace }}/.ssh/id_rsa
+
+#      - name: chmod 600
+#        run: chmod 600 ${{ github.workspace }}/.ssh/id_rsa
+
+#      - name: SSH KeyScan
+#        run: ssh-keyscan github.com >> ${{ github.workspace }}/.ssh/known_hosts
+
+#      - name: ssh-agent
+#        run: ssh-agent /usr/bin/bash
+
+#      - name: eval
+#        run: eval "$(ssh-agent -s)"
+
+#      - name: ssh-add
+#        run: ssh-add ${{ github.workspace }}/.ssh/id_rsa
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Clone with SSH
+        run: ssh -T git@github.com > /dev/null 2>&1 || true
+
+      - name: Show remote repositories (verbose)
+        run: git remote -v
+
+      - name: Set-URL
+        run: git remote set-url origin git@github.com:eucalypsih/$(basename "${{ github.workspace }}").git
+
+      - name: Show remote repositories (verbose)
+        run: git remote -v
+
+      - name: Set global Git username and email
+        run: git config --global user.name "github-actions[bot]" && git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: View all Git configuration
+        run: git config --list
+
+      - name: Stage all files in GitHub Actions workspace
+        run: git -C ${{ github.workspace }} add .
+
+      - name: Amend the last commit message
+        run: git commit -m "From CI/CD" --amend
+
+      - name: Push main to origin
+        run: git push origin main --force
+
+#      - name: Menunggu selama 5 menit
+#        run: sleep 300  # 300 detik = 5 menit
+
+#      - name: Eksekusi tugas setelah delay
+#        run: echo "Workflow dimulai setelah penundaan 5 menit."
+#
+#
